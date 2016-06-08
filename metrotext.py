@@ -2,13 +2,21 @@
 # -*- coding: UTF-8 -*-
 
 from serial import Serial
+from serial import serialutil
 from time import sleep
 import urllib
 import string
 from bs4 import BeautifulSoup
 import time
 
-ser = Serial("/dev/ttyUSB0", 600, 7, 'E', 1)
+try:
+        ser = Serial("/dev/ttyUSB0", 600, 7, 'E', 1)
+except serialutil.SerialException:
+        try:
+                ser = Serial("/dev/ttyUSB1", 600, 7, 'E', 1)
+        except serialutil.SerialException:
+                print "No serial device found"
+
 STX = chr(2)
 ETX = chr(3)
 EOT = chr(4)
@@ -26,7 +34,7 @@ def wr(x):
 slp = 1 # sometimes even smaller works, sometimes need to retry with this
 
 while 1:            
-	f = urllib.urlopen("http://sakari.nerdclub.fi/dist/php/message.html")
+	f = urllib.urlopen("http://sakari.nerdclub.dy.fi/dist/php/message.html")
 	soup = BeautifulSoup(f)
 	print soup
 	print "\n" 
