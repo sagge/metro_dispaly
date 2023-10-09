@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
-import os
 import time
 import RPi.GPIO as GPIO
 
@@ -17,7 +16,7 @@ GPIO.setup(IN2, GPIO.OUT)
 GPIO.setup(PWM, GPIO.OUT)
 GPIO.setup(STBY, GPIO.OUT)
 pwm_instance = GPIO.PWM(PWM, 1000)
-# direction_file = "/home/metronaytto/projects/metro_display/direction.txt"
+direction_file = "/home/metronaytto/projects/metro_display/direction.txt"
 
 def move(direction):
     GPIO.output(STBY, GPIO.HIGH) #disable standby
@@ -37,22 +36,19 @@ def move(direction):
     print("moved to direction: ", direction)
 
 try:
-    # file = open(direction_file, "r")
-    # direction = file.read()
-    # file.close()
-    direction = os.getenv('CLOCK_DIRECTION')
+    file = open(direction_file, "r")
+    direction = file.read()
+    file.close()
     if direction == "1":
         move(1)
-        # file = open(direction_file, "w")
-        # file.write("0")
-        # file.close()
-        os.environ['CLOCK_DIRECTION'] = '0'
+        file = open(direction_file, "w")
+        file.write("0")
+        file.close()
     else:
         move(0)
-        # file = open(direction_file, "w")
-        # file.write("1")
-        # file.close()
-        os.environ['CLOCK_DIRECTION'] = '1'
+        file = open(direction_file, "w")
+        file.write("1")
+        file.close()
 
 except Exception as e:
     print(e)
