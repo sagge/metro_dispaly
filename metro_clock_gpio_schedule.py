@@ -24,15 +24,15 @@ exit = Event()
 
 def move():
     GPIO.output(STBY, GPIO.HIGH) #disable standby
-    inPin1 = GPIO.HIGH
-    inPin2 = GPIO.LOW
+    inPin1 = GPIO.LOW
+    inPin2 = GPIO.HIGH
 
-    # Even minutes move with direction 0, odd minutes move with direction 1
+    # Move to even minute with direction 0, to odd minute with direction 1
     direction = datetime.datetime.now().minute % 2
 
     if direction == 1:
-        inPin1 = GPIO.LOW
-        inPin2 = GPIO.HIGH
+        inPin1 = GPIO.HIGH
+        inPin2 = GPIO.LOW
 
     GPIO.output(IN1, inPin1)
     GPIO.output(IN2, inPin2)

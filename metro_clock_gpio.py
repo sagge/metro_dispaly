@@ -20,12 +20,12 @@ direction_file = "/home/metronaytto/projects/metro_display/direction.txt"
 
 def move(direction):
     GPIO.output(STBY, GPIO.HIGH) #disable standby
-    inPin1 = GPIO.HIGH
-    inPin2 = GPIO.LOW
+    inPin1 = GPIO.LOW
+    inPin2 = GPIO.HIGH
 
     if direction == 1:
-        inPin1 = GPIO.LOW
-        inPin2 = GPIO.HIGH
+        inPin1 = GPIO.HIGH
+        inPin2 = GPIO.LOW
 
     GPIO.output(IN1, inPin1)
     GPIO.output(IN2, inPin2)
