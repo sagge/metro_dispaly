@@ -3,6 +3,7 @@
 
 import schedule
 import time
+import datetime
 from threading import Event
 import RPi.GPIO as GPIO
 
@@ -21,16 +22,17 @@ pwm_instance = GPIO.PWM(PWM, 1000)
 
 exit = Event()
 
-direction = 0
-
-def move(direction):
+def move():
     GPIO.output(STBY, GPIO.HIGH) #disable standby
-    inPin1 = GPIO.LOW
-    inPin2 = GPIO.HIGH
+    inPin1 = GPIO.HIGH
+    inPin2 = GPIO.LOW
+
+    # Even minutes move with direction 0, odd minutes move with direction 1
+    direction = datetime.datetime.now().minute % 2
 
     if direction == 1:
-        inPin1 = GPIO.HIGH
-        inPin2 = GPIO.LOW
+        inPin1 = GPIO.LOW
+        inPin2 = GPIO.HIGH
 
     GPIO.output(IN1, inPin1)
     GPIO.output(IN2, inPin2)
@@ -40,17 +42,8 @@ def move(direction):
     GPIO.output(STBY, GPIO.LOW) #enable standby
     print("moved to direction: ", direction)
 
-def move_and_update_direction():
-    global direction
-    if direction == 1:
-        move(1)
-        direction = 0
-    else:
-        move(0)
-        direction = 1
-
 def main():
-    schedule.every().minute.at(':00').do(move_and_update_direction)
+    schedule.every().minute.at(':00').do(move)
     while not exit.is_set():
         schedule.run_pending()
         time.sleep(.1)
