@@ -1,0 +1,21 @@
+Using the PL011 UART port
+For Raspberry Pi OS and Raspbian Linux, there is a device tree file called disable-bt, which makes the Raspberry Pi disable the Bluetooth module and map pl011 UART on pins 14 and 15.
+
+Step 1 - Login via terminal or desktop and shell
+
+Step 2:  Device Tree settings as below:
+
+Add the device tree to /boot/config.txt to disable the Bluetooth module.
+
+sudo nano /boot/config.txt
+Add at the end of the file
+
+dtoverlay=disable-bt
+Exit the editor.
+
+Step 3:  You must also disable the hciuart service, which initialises the Bluetooth modem:
+
+sudo systemctl disable hciuart
+Step 4:  Reboot your Raspberry Pi to enable the changes:
+
+sudo reboot

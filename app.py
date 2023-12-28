@@ -7,6 +7,7 @@ import gunicorn.app.base
 import os
 import threading
 from time import sleep
+import RPi.GPIO as GPIO
 
 from flask import Flask, request
 from flask_expects_json import expects_json
@@ -24,6 +25,14 @@ schema = {
         '2': {'type': 'string', 'maxLength': 48},
     },
     'required': ['1', '2']
+}
+
+schema2 = {
+    'type': 'object',
+    'properties': {
+        'buttonValue': {'type': 'string', 'maxLength': 48},
+    },
+    'required': ['buttonValue']
 }
 
 
@@ -46,16 +55,50 @@ def update_data():
                     [1], 2: data['rows'][2]}
     return return_value, 200
 
+@app.route('/sound', methods=['PUT'])
+@expects_json(schema2)
+def play_sound():
+    json_data = request.json
+    value = json_data["buttonValue"]
+    allowed_values = set(["IK", "KP", "MM", "RL", "S1", "VS"])
+
+    if not value in allowed_values:
+        return "Invalid value", 400
+
+    RELAY = 2
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(RELAY, GPIO.OUT)
+    # Connect speaker relay
+    GPIO.output(RELAY, GPIO.LOW)
+
+    command = value + "."
+
+    try:
+        ser = Serial("/dev/ttyUSB_SOUND", 9600, 8, 'N', 1)
+    except serialutil.SerialException:
+        return "Serial device disconnected", 500
+
+    sleep(0.1)
+    ser.write(b"@I.@E-.")
+    sleep(0.1)
+    ser.write(b"@E+.")
+    sleep(0.1)
+    ser.write(b"@E+.")
+    sleep(0.1)
+    ser.write(b"@E+.")
+    sleep(0.1)
+    ser.write(command)
+    return "ok", 200
 
 def __worker_thread():
     global data
     current_row1 = data['rows'][1]
     current_row2 = data['rows'][2]
     try:
-        ser = Serial("/dev/ttyUSB0", 600, 7, 'E', 1)
+        ser = Serial("/dev/ttyUSB_TEXT", 600, 7, 'E', 1)
     except serialutil.SerialException:
         try:
-            ser = Serial("/dev/ttyUSB1", 600, 7, 'E', 1)
+            ser = Serial("/dev/ttyUSB0", 600, 7, 'E', 1)
         except serialutil.SerialException:
             print("No serial device found")
 
