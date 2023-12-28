@@ -89,7 +89,7 @@ def play_sound():
     ser.write(b"@E+.")
     sleep(0.1)
     ser.write(command.encode())
-    return "ok", 200
+    return "", 200
 
 def __worker_thread():
     global data
