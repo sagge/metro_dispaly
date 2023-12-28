@@ -87,7 +87,7 @@ def play_sound():
     sleep(0.1)
     ser.write(b"@E+.")
     sleep(0.1)
-    ser.write(command)
+    ser.write(command.encode())
     return "ok", 200
 
 def __worker_thread():
