@@ -89,6 +89,9 @@ def play_sound():
     ser.write(b"@E+.")
     sleep(0.1)
     ser.write(command.encode())
+    sleep(7)
+    # Disconnect speaker relay
+    GPIO.output(RELAY, GPIO.HIGH)
     return {"status": "success"}, 200
 
 def __worker_thread():
